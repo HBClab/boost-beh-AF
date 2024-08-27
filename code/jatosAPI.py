@@ -36,7 +36,7 @@ def get_met():
     one_day_ago = current_time - (24 * 60 * 60 * 1000)  # 24 hours ago in milliseconds
 
     # Initialize an empty list to store study result IDs
-    study_result_ids = [10979]
+    study_result_ids = []
 
     # Iterate through the data to check conditions and collect study result IDs
     for study in response['data']:
@@ -121,7 +121,9 @@ def get_data(study_result_ids):
         print(f"Response Text: {response.text}")
 
 def push_data():
-    os.system("git add -A \
+    os.system("cd .. \
+              git origin Main \
+              git add -A \
               git commit -m 'Update data' \
               git push")
 
