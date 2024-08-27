@@ -1,19 +1,17 @@
 name: Task1 QC
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
   process_raw:
     runs-on: self-hosted
     steps:
-      - name: checkout code and return recently uploaded file in /data
+      - name: checkout code and return recently uploaded file in data
         uses: actions/checkout@v2
+      - name: get most recent file
         run: |
           git pull origin main
-          #!/bin/bash
           data=$(ls -t /data/*.txt | head -n 1)
+          echo "Most recent file: $data"
 
       - name: set up python
         run: |
