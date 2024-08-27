@@ -9,6 +9,7 @@ jobs:
         uses: actions/checkout@v2
       - name: get most recent file
         run: |
+          git config pull.rebase false
           git pull origin main
           data=$(ls -t /data/*.txt | head -n 1)
           echo "Most recent file: $data"
