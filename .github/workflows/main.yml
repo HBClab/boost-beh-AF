@@ -10,7 +10,7 @@ jobs:
       - name: get most recent file
         run: |
           git config pull.rebase false
-          data=$(ls -t /data/*.txt | head -n 1)
+          data=$(ls -t /data/*.txt | head -n 1) >> $GITHUB_ENV
           echo "Most recent file: $data"
 
       - name: set up python
