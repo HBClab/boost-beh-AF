@@ -20,8 +20,7 @@ jobs:
 
       - name: parse raw
         run: |
-          filename=$(basename $data)
-          IFS='_' read -r sub task version <<< "$filename"
+          IFS='_' read -r sub task version <<< "$data"
           echo "sub=$sub" >> $GITHUB_ENV
           echo "task=$task" >> $GITHUB_ENV
           echo "version=$version" >> $GITHUB_ENV
