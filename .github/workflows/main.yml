@@ -20,7 +20,6 @@ jobs:
 
       - name: parse raw
         run: |
-          // add bash to parse raw data filename, split by '_', and save as local variable
           #!/bin/bash
           filename=$(basename $data)
           IFS='_' read -r sub task version <<< "$filename"
