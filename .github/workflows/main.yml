@@ -31,7 +31,7 @@ jobs:
       - name: convert raw
         run: |
           mkdir data/${sub}/processed
-          python code/ConvertBeh.py -submission ${data} -out data/${sub}/processed -sub ${sub} -task ${task} -taskvers ${version}
+          python code/ConvertBeh.py -submission $data -out data/$sub/processed -sub $sub -task $task -taskvers $version
 
   run_qc:
     runs-on: self-hosted
