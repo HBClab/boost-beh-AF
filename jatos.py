@@ -183,11 +183,13 @@ def move_txt(txt_files):
     for file_path, df in dic.items():
         for sub in np.unique(df['subject_id']):
             print(sub)
-            target_dir = f'./data/{sub}/processed'
+            target_dir = f'./data/{sub}/raw'
             os.makedirs(target_dir, exist_ok=True)
             # Save the DataFrame to a CSV file in the target directory
-            output_file = os.path.join(target_dir, os.path.basename(file_path).replace('.txt', '.csv'))
-            df.to_csv(output_file, index=False)
+            output_file = os.path.join(target_dir, os.path.basename(file_path))
+            # save df as a txt file to target dir
+            with open(output_file, 'w') as f:
+                f.write(df.to_string(index=False))
             print(f"Saved {output_file} to {target_dir}")
 
     return None
