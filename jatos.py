@@ -115,10 +115,10 @@ def get_data(study_result_ids):
 
             # Walk through the directory and find all .txt files, save paths to a list
             txt_files = []
-            for files in os.listdir("./data"):
+            for root, dirs, files in os.walk("./data/raw"):
                 for file in files:
                     if file.endswith(".txt"):
-                        txt_files.append(os.path.join('./data/raw', file))
+                        txt_files.append(os.path.join(root, file))
             print(f"Found {len(txt_files)} .txt files.")
             #move the text file to the data folder
 
@@ -134,9 +134,10 @@ def convert_beh():
 
 
     txt = []
-    for file in os.listdir('./data/raw'):
-        if file.endswith(".txt"):
-            txt.append('./data/'+file)
+    for root, dirs, files in os.walk('./data/raw'):
+        for file in files:
+            if file.endswith(".txt"):
+                txt.append(os.path.join(root, file))
     print(txt)
             
     count = 0
@@ -217,9 +218,10 @@ def main():
     get_data(study_result_ids)
     convert_beh()
     txt_files = []
-    for file in os.listdir('./data/raw'):
-        if file.endswith(".txt"):
-            txt_files.append('./data/raw' + file)
+    for root, dirs, files in os.walk('./data/raw'):
+        for file in files:
+            if file.endswith(".txt"):
+                txt_files.append(os.path.join(root, file))
     move_txt(txt_files)
     push()
 
