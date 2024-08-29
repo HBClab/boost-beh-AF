@@ -106,7 +106,7 @@ def get_data(study_result_ids):
 
             # Extract the filtered zip file
             with zipfile.ZipFile(filtered_jrzip_file, 'r') as zip_ref:
-                zip_ref.extractall('./data')
+                zip_ref.extractall('./data/raw')
             print(f"Unzipped file: {filtered_jrzip_file}")
 
             # Optionally, remove the original and filtered zip files after extraction
@@ -118,8 +118,10 @@ def get_data(study_result_ids):
             for files in os.listdir("./data"):
                 for file in files:
                     if file.endswith(".txt"):
-                        txt_files.append(os.path.join('./data', file))
+                        txt_files.append(os.path.join('./data/raw', file))
             print(f"Found {len(txt_files)} .txt files.")
+            #move the text file to the data folder
+
         else:
             print("The file is not a valid zip file.")
     else:
@@ -132,7 +134,7 @@ def convert_beh():
 
 
     txt = []
-    for file in os.listdir('./data'):
+    for file in os.listdir('./data/raw'):
         if file.endswith(".txt"):
             txt.append('./data/'+file)
     print(txt)
@@ -191,6 +193,12 @@ def move_txt(txt_files):
             with open(output_file, 'w') as f:
                 f.write(df.to_string(index=False))
             print(f"Saved {output_file} to {target_dir}")
+        os.remove(file_path)
+        print(f"Removed {file_path}")
+        # remove any dirs in data/raw
+        for root, dirs, files in os.walk('./data/raw'):
+            for d in dirs:
+                shutil.rmtree(os.path.join(root, d))
 
     return None
 
@@ -209,9 +217,9 @@ def main():
     get_data(study_result_ids)
     convert_beh()
     txt_files = []
-    for file in os.listdir('./data'):
+    for file in os.listdir('./data/raw'):
         if file.endswith(".txt"):
-            txt_files.append('./data/' + file)
+            txt_files.append('./data/raw' + file)
     move_txt(txt_files)
     push()
 
