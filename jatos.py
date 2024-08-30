@@ -39,10 +39,10 @@ def get_met():
 
     # Get the current timestamp
     current_time = datetime.now().timestamp() * 1000  # Convert to milliseconds
-    one_day_ago = current_time - (24 * 60 * 60 * 1000)  # 24 hours ago in milliseconds
+    one_day_ago = current_time - 6*(24 * 60 * 60 * 1000)  # 24 hours ago in milliseconds
 
     # Initialize an empty list to store study result IDs
-    study_result_ids = [10979]
+    study_result_ids = []
 
     # Iterate through the data to check conditions and collect study result IDs
     for study in response['data']:
