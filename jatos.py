@@ -25,7 +25,7 @@ def get_met():
         'studyIds': 996,
         'studyIds': 911,
         'studyIds': 928,
-        'studyIds': 946
+        'studyIds': 945
     }
 
     response = requests.post(url, headers=headers, json=data)
