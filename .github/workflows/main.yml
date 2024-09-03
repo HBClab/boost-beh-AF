@@ -50,7 +50,7 @@ jobs:
     needs: process_raw
     steps:
       - name: run quality control
-        run: python ./code/AFqC.py -s data/$sub/processed/${sub}*.csv -o data/$sub/ -sub $sub | tee data/$sub/qc.log
+        run: python ./code/AFqC.py -s data/${sub}/processed/${sub}*.csv -o data/${sub}/ -sub ${sub} | tee data/${sub}/qc.log
 
   push:
     runs-on: self-hosted
