@@ -142,15 +142,7 @@ def convert_beh():
 
     print(dic)
 
-    # if task is not AF, skip
-    for i in range(len(dic)):
-        i += 1
-        if dic[i]['task'][2] != 'AF':
-            dic.pop(i)
 
-    if len(dic) == 0:
-        print("No AF tasks found.")
-        exit()
 
 
     paths = []
