@@ -10,14 +10,20 @@ jobs:
     steps:
       - name: checkout code and return recently uploaded file in /data
         uses: actions/checkout@v2
-      - name: get changed files
+      - name: Get changed files
         run: |
           git pull origin main
-          #!/bin/bash
-          # Get the list of CSV files changed in the last commit
-          data=$(git diff --name-only HEAD~1 HEAD | grep '\.csv$')
-          echo "data=$data" >> $GITHUB_ENV
-          echo "Changed CSV files: $data"
+          # Check if there is at least one previous commit
+          if git rev-parse HEAD~1 >/dev/null 2>&1; then
+            # Get the list of CSV files changed in the last commit
+            data=$(git diff --name-only HEAD~1 HEAD -- '*.csv')
+            echo "data=$data" >> $GITHUB_ENV
+            echo "Changed CSV files: $data"
+          else
+            echo "No previous commit found."
+            echo "data=" >> $GITHUB_ENV
+          fi
+
 
       - name: set up python
         run: |
