@@ -13,7 +13,9 @@ jobs:
         run: |
           git pull origin main
           #!/bin/bash
-          data=$(ls -t /data/*.txt | head -n 1)
+          # Get the list of CSV files changed in the last commit
+          data=$(git diff --name-only HEAD~1 HEAD | grep '\.csv$') << $GITHUB_ENV
+          echo "Changed CSV files: $data"
 
       - name: set up python
         run: |
@@ -22,19 +24,18 @@ jobs:
 
       - name: parse raw
         run: |
-          // add bash to parse raw data filename, split by '_', and save as local variable
           #!/bin/bash
-          filename=$(basename $data)
-          IFS='_' read -r sub task version <<< "$filename"
-          echo "sub=$sub" >> $GITHUB_ENV
-          echo "task=$task" >> $GITHUB_ENV
-          echo "version=$version" >> $GITHUB_ENV
-          echo "Subject: $sub"
-          echo "Task: $task"
-          echo "Version: $version"
-
-      - name: convert raw
-        run: python code/ConvertBeh.py -submission $data -out data/$sub/processed
+          # Loop through each CSV file in $data
+          for file in $data; do
+              filename=$(basename "$file")
+              IFS='_' read -r sub task version <<< "$filename"
+              echo "sub=$sub" >> $GITHUB_ENV
+              echo "task=$task" >> $GITHUB_ENV
+              echo "version=$version" >> $GITHUB_ENV
+              echo "Subject: $sub"
+              echo "Task: $task"
+              echo "Version: $version"
+          done
 
   run_qc:
     runs-on: self-hosted
@@ -51,7 +52,7 @@ jobs:
         run: |
           git config user.email zjgilliam@uiowa.edu
           git config user.name "Zak Gilliam"
-          git remote set-url origin //insert PAT
+          git remote set-url origin 
           git add -A
           git commit -m "QC results for ${sub}"
           git push origin main

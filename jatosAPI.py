@@ -20,12 +20,7 @@ def get_met():
         'Content-Type': 'application/json',
     }
     data = {
-        'studyIds': 958,
-        'studyIds': 973,
-        'studyIds': 996,
-        'studyIds': 911,
-        'studyIds': 928,
-        'studyIds': 945
+        'studyIds': [946, 961, 991, 899, 920, 933]
     }
 
     response = requests.post(url, headers=headers, json=data)
@@ -39,10 +34,10 @@ def get_met():
 
     # Get the current timestamp
     current_time = datetime.now().timestamp() * 1000  # Convert to milliseconds
-    one_day_ago = current_time - 6*(24 * 60 * 60 * 1000)  # 24 hours ago in milliseconds
+    one_day_ago = current_time - (24 * 60 * 60 * 1000)  # 24 hours ago in milliseconds
 
     # Initialize an empty list to store study result IDs
-    study_result_ids = []
+    study_result_ids = [10634]
 
     # Iterate through the data to check conditions and collect study result IDs
     for study in response['data']:
@@ -68,12 +63,7 @@ def get_data(study_result_ids):
     }
     # Get the data for each study result
     datas = {
-        'studyIds': 958,
-        'studyIds': 973,
-        'studyIds': 996,
-        'studyIds': 911,
-        'studyIds': 928,
-        'studyIds': 945,
+        'studyIds': [946, 961, 991, 899, 920, 933],
         'studyResultIds': study_result_ids
     }
 
