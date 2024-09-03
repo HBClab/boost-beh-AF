@@ -10,6 +10,7 @@ jobs:
     steps:
       - name: checkout code and return recently uploaded file in /data
         uses: actions/checkout@v2
+      - name: get changed files
         run: |
           git pull origin main
           #!/bin/bash
