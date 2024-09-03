@@ -58,7 +58,7 @@ jobs:
     steps:
       - name: push results
         run: |
-          git remote set-url origin 
+          git remote set-url https://github.com/HBClab/boost-beh-AF.git
           git add -A
           git commit -m "QC results for ${sub}"
           git push origin main
