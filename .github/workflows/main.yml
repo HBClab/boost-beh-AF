@@ -1,17 +1,21 @@
 name: Task1 QC
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   process_raw:
     runs-on: self-hosted
     steps:
-      - name: checkout code and return recently uploaded file in data
+      - name: checkout code and return recently uploaded file in /data
         uses: actions/checkout@v2
-      - name: get most recent file
         run: |
-          git config pull.rebase false
-          data=$(ls -t /data/*.txt | head -n 1) >> $GITHUB_ENV
-          echo "Most recent file: $data"
+          git pull origin main
+          #!/bin/bash
+          # Get the list of CSV files changed in the last commit
+          data=$(git diff --name-only HEAD~1 HEAD | grep '\.csv$') << $GITHUB_ENV
+          echo "Changed CSV files: $data"
 
       - name: set up python
         run: |
@@ -20,23 +24,25 @@ jobs:
 
       - name: parse raw
         run: |
-          IFS='_' read -r sub task version <<< "$data"
-          echo "sub=$sub" >> $GITHUB_ENV
-          echo "version=$version" >> $GITHUB_ENV
-          echo "Subject: $sub"
-          echo "Version: $version"
-
-      - name: convert raw
-        run: |
-          mkdir data/${sub}/processed \
-          python code/ConvertBeh.py -submission $data -out data/$sub/processed -sub $sub -task AF -taskvers $version
+          #!/bin/bash
+          # Loop through each CSV file in $data
+          for file in $data; do
+              filename=$(basename "$file")
+              IFS='_' read -r sub task version <<< "$filename"
+              echo "sub=$sub" >> $GITHUB_ENV
+              echo "task=$task" >> $GITHUB_ENV
+              echo "version=$version" >> $GITHUB_ENV
+              echo "Subject: $sub"
+              echo "Task: $task"
+              echo "Version: $version"
+          done
 
   run_qc:
     runs-on: self-hosted
     needs: process_raw
     steps:
       - name: run quality control
-        run: python AFqC.py -s data/${sub}/processed/${sub}*.csv -o data/${sub}/ -sub ${sub} | tee data/${sub}/qc.log
+        run: python AFqC.py -s data/$sub/processed/${sub}*.csv -o data/$sub/ -sub $sub | tee data/$sub/qc.log
 
   push:
     runs-on: self-hosted
@@ -46,6 +52,7 @@ jobs:
         run: |
           git config user.email zjgilliam@uiowa.edu
           git config user.name "Zak Gilliam"
+          git remote set-url origin 
           git add -A
           git commit -m "QC results for ${sub}"
           git push origin main
