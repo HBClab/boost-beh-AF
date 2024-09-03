@@ -58,8 +58,6 @@ jobs:
     steps:
       - name: push results
         run: |
-          git config user.email zjgilliam@uiowa.edu
-          git config user.name "Zak Gilliam"
           git remote set-url origin 
           git add -A
           git commit -m "QC results for ${sub}"
