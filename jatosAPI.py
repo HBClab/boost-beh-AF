@@ -37,7 +37,7 @@ def get_met():
     one_day_ago = current_time - (24 * 60 * 60 * 1000)  # 24 hours ago in milliseconds
 
     # Initialize an empty list to store study result IDs
-    study_result_ids = []
+    study_result_ids = [10634]
 
     # Iterate through the data to check conditions and collect study result IDs
     for study in response['data']:
@@ -142,9 +142,19 @@ def convert_beh():
 
     print(dic)
 
+    # if task is not AF, skip
+    for i in range(len(dic)):
+        i += 1
+        if dic[i]['task'][2] != 'AF':
+            dic.pop(i)
+
+    if len(dic) == 0:
+        print("No AF tasks found.")
+        exit()
 
 
     paths = []
+    print(dic)
     for i in range(len(dic)):
         i += 1
         for sub in np.unique(dic[i]['subject_id']):
