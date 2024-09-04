@@ -51,12 +51,23 @@ jobs:
       - name: run quality control
         run: |
             for sub in ${sub}; do
-                for task in ${task}; do
-                    for vers in ${vers}; do
-                        python ./code/AFqC.py -s ./data/${sub}/processed/${sub}_${task}_${vers}.csv -o ./data/${sub}/ -sub ${sub} | tee ./data/${sub}/qc_${task}_${vers}.log
-                        echo "QC for ${sub}_${task}_${vers} running"
-                    done
+            echo "Processing subject: $sub"
+            for task in ${task}; do
+                echo "Processing task: $task"
+                for vers in ${vers}; do
+                echo "Processing version: $vers"
+                csv_file="./data/${sub}/processed/${sub}_${task}_${vers}.csv"
+                log_file="./data/${sub}/qc_${task}_${vers}.log"
+                echo "CSV file: $csv_file"
+                echo "Log file: $log_file"
+                if [ -f "$csv_file" ]; then
+                    python ./code/AFqC.py -s "$csv_file" -o "./data/${sub}/" -sub "$sub" | tee "$log_file"
+                    echo "QC for ${sub}_${task}_${vers} running"
+                else
+                    echo "CSV file $csv_file does not exist"
+                fi
                 done
+            done
             done
 
   push:
