@@ -91,7 +91,6 @@ jobs:
     runs-on: self-hosted
     needs: run_qc
     steps:
-      - uses: actions/checkout@v3
       - name: Commit and Push Changes
         run: |
             git config --global user.name "miloswrath"
