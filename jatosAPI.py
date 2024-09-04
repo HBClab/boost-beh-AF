@@ -144,15 +144,19 @@ def convert_beh():
 
 
 
-
     paths = []
     print(dic)
     for i in range(len(dic)):
         i += 1
         for sub in np.unique(dic[i]['subject_id']):
             print(sub)
-            paths.append((f'./data/{sub}/processed'+"/{0}_{1}_{2}"+".csv").format(sub,dic[i]['task'][0],dic[i]['task_vers'][0]))
-        
+            if os.path.exists(f'./data/{sub}/processed/run-1'):
+                paths.append((f'./data/{sub}/processed/run-2'+"/{0}_{1}_{2}"+".csv").format(sub,dic[i]['task'][0],dic[i]['task_vers'][0]))
+            elif os.path.exists(f'./data/{sub}/processed/run-2'):
+                paths.append((f'./data/{sub}/processed/run-1'+"/{0}_{1}_{2}"+".csv").format(sub,dic[i]['task'][0],dic[i]['task_vers'][0]))
+            else:
+                paths.append((f'./data/{sub}/processed/run-1'+"/{0}_{1}_{2}"+".csv").format(sub,dic[i]['task'][0],dic[i]['task_vers'][0]))
+            
 
 
         for path in paths:
