@@ -75,6 +75,7 @@ def plots(submission, output, sub):
         plt.title(name, fontsize=15, pad=20, color="white")
 
         plt.savefig(os.path.join(output, f'{sub}_'+output_name+'.png'))
+        print(f'Saved {output_name} plot')
         plt.close()
 
 
@@ -83,7 +84,7 @@ def plots(submission, output, sub):
     sb.stripplot(x='condition', y='response_time', data=test, alpha=0.5)
     sb.boxplot(x='condition', y='response_time', data=test, whis=np.inf, linewidth=0.5)
     plt.savefig(os.path.join(output, f'{sub}_rt.png'))
-
+    print('Saved response time plot')
     plot_circular_bar_graph(test['correct'].groupby(test['condition']).mean(), 'Accuracy by Condition', 'accuracy_by_condition')
 
  
@@ -111,7 +112,7 @@ def main():
     print(f'QC passed for {submission}, generating plots...')
     # generate plots
     plots(submission, output, sub)
-    return submission
+    return print('QC and Plots complete')
     
     
 if __name__ == '__main__':
