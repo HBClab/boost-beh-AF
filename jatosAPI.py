@@ -203,7 +203,7 @@ def move_txt(txt_files):
 
 
 def push():
-
+    subprocess.run(["git","remote", "set-url", "https://github.com/HBClab/boost-beh-AF.git"])
     subprocess.run(["git", "add", "-A"])
     subprocess.run(["git", "commit", "-m", "auto commit -> added subject task data"])
     subprocess.run(["git", "push"])
