@@ -7,6 +7,11 @@ on:
 jobs:
   process_raw:
     runs-on: self-hosted
+    outputs:
+        sub: ${{ steps.set_vars.outputs.sub }}
+        task: ${{ steps.set_vars.outputs.task }}
+        version: ${{ steps.set_vars.outputs.version }}
+
     steps:
       - name: checkout code and return recently uploaded file in /data
         uses: actions/checkout@v3
@@ -29,20 +34,20 @@ jobs:
           pip install -r requirements.txt
 
       - name: parse raw
+        id: set_vars
         run: |
-          #!/bin/bash
-          # Loop through each CSV file in $data
-          for file in $data; do
-              filename=$(basename "$file")
-              IFS='_' read -r sub task version <<< "$filename"
-              version="${version%.*}"
-              echo "sub=$sub" >> $GITHUB_ENV
-              echo "task=$task" >> $GITHUB_ENV
-              echo "version=$version" >> $GITHUB_ENV
-              echo "Subject: $sub"
-              echo "Task: $task"
-              echo "Version: $version"
-          done
+            # Loop through each CSV file in $data
+            for file in $data; do
+                filename=$(basename "$file")
+                IFS='_' read -r sub task version <<< "$filename"
+                version="${version%.csv}"  # Remove the .csv extension from version
+                echo "::set-output name=sub::$sub"
+                echo "::set-output name=task::$task"
+                echo "::set-output name=version::$version"
+                echo "Subject: $sub"
+                echo "Task: $task"
+                echo "Version: $version"
+            done
 
   run_qc:
     runs-on: self-hosted
@@ -53,12 +58,15 @@ jobs:
 
       - name: Debug env vars
         run: |
-            echo "sub=$sub"
-            echo "task=$task"
-            echo "version=$version"
+            echo "sub=${{ needs.process_raw.outputs.sub }}"
+            echo "task=${{ needs.process_raw.outputs.task }}"
+            echo "version=${{ needs.process_raw.outputs.version }}"
 
       - name: run quality control
         run: |
+            sub=${{ needs.process_raw.outputs.sub }}
+            task=${{ needs.process_raw.outputs.task }}
+            vers=${{ needs.process_raw.outputs.version }}
             for sub in ${sub}; do
             echo "Processing subject: $sub"
             for task in ${task}; do
