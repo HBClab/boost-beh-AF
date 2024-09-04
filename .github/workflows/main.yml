@@ -35,6 +35,7 @@ jobs:
           for file in $data; do
               filename=$(basename "$file")
               IFS='_' read -r sub task version <<< "$filename"
+              version="${version%.*}"
               echo "sub=$sub" >> $GITHUB_ENV
               echo "task=$task" >> $GITHUB_ENV
               echo "version=$version" >> $GITHUB_ENV
@@ -52,7 +53,7 @@ jobs:
             for sub in ${sub}; do
                 for task in ${task}; do
                     for vers in ${vers}; do
-                        python ./code/AFqC.py -s data/${sub}/processed/${sub}_${task}_${vers}.csv -o data/${sub}/ -sub ${sub} | tee data/${sub}/qc_${task}_${vers}.log
+                        python ./code/AFqC.py -s ./data/${sub}/processed/${sub}_${task}_${vers}.csv -o ./data/${sub}/ -sub ${sub} | tee ./data/${sub}/qc_${task}_${vers}.log
                     done
                 done
             done
