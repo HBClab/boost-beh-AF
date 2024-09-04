@@ -54,6 +54,7 @@ jobs:
                 for task in ${task}; do
                     for vers in ${vers}; do
                         python ./code/AFqC.py -s ./data/${sub}/processed/${sub}_${task}_${vers}.csv -o ./data/${sub}/ -sub ${sub} | tee ./data/${sub}/qc_${task}_${vers}.log
+                        echo "QC for ${sub}_${task}_${vers} running"
                     done
                 done
             done
