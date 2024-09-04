@@ -48,6 +48,15 @@ jobs:
     runs-on: self-hosted
     needs: process_raw
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Debug env vars
+        run: |
+            echo "sub=$sub"
+            echo "task=$task"
+            echo "version=$version"
+
       - name: run quality control
         run: |
             for sub in ${sub}; do
