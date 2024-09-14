@@ -106,14 +106,14 @@ jobs:
           # Loop through the images and group by subject number
           declare -A subjects
 
-          for file in "$png_files"; do
+          for file in $png_files; do
               # Extract the subject number (assuming it's the first part of the filename before '_')
-              subject=$("$file" | awk -F_ '{print $1}')
+              subject=$(echo "$file" | awk -F_ '{print $1}')
               
               # Append the filename to the subject's array
               subjects["$subject"]+="$file "
           done
-
+          
           # Generate Jekyll posts
           for subject in "${!subjects[@]}"; do
               # Define the post filename (e.g., using current date and subject number)
