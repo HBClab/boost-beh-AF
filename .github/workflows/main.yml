@@ -214,7 +214,7 @@ jobs:
           declare -A subjects
 
           # Iterate over each PNG file and group them by subject number
-          for file in ./downloaded-pngs/*/processed/*/*.png; do
+          for file in ./downloaded-pngs/*/*/*.png; do
               # Check if the file exists to avoid errors
               if [ ! -f "$file" ]; then
                   continue
@@ -248,7 +248,7 @@ jobs:
                       # Adjust the image path based on your site structure
                       # Assuming images are served from the root, adjust if necessary
                       image_relative_path=$(realpath --relative-to=./ _site $image)
-                      echo "![](/downloaded-pngs/${subject}/processed/$(basename $(dirname $(dirname $image)))/$(basename "$image"))"
+                      echo "![](/downloaded-pngs/${subject}/$(basename $(dirname $(dirname $image)))/$(basename "$image"))"
                   done
               } > "$post_filename"
 
