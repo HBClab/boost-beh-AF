@@ -130,16 +130,18 @@ jobs:
           find ./data -type f
 
       - name: List Generated PNGs
+        id: list_pngs
         run: |
-          echo "Listing generated PNGs:"
-          find ./data/*/*/*.png || echo "No PNGs found."
-
+            png_files=$(find ./data/*/*/*.png)
+            echo "PNG_FILES=${png_files}" >> $GITHUB_ENV
+            echo "png_files=$png_files" >> $GITHUB_OUTPUT
+        
       - name: Upload Generated PNGs as Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: generated-pngs
-          path: /data/*/*/*.png # Adjust the path based on your directory structure
-          retention-days: 2  # Optional: Adjust retention period as needed
+          path: ${{ steps.list_pngs.outputs.png_files }}
+          retention-days: 2
 
   add:
     name: Generate Jekyll Posts and Deploy
