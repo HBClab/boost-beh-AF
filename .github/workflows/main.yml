@@ -125,7 +125,7 @@ jobs:
       - name: List Generated PNGs
         run: |
           echo "Listing generated PNGs:"
-          find ./data/**/*.png
+          find ./data/**/*.png || echo "No PNGs found."
 
       - name: Upload Generated PNGs as Artifacts
         uses: actions/upload-artifact@v3
