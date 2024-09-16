@@ -138,7 +138,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: generated-pngs
-          path: $GITHUB_WORKSPACE/data/*/*/*.png # Adjust the path based on your directory structure
+          path: /data/*/*/*.png # Adjust the path based on your directory structure
           retention-days: 2  # Optional: Adjust retention period as needed
 
   add:
