@@ -132,6 +132,7 @@ jobs:
               # Find newly added PNG files in this commit
               png_files=$(git diff --name-only --relative --diff-filter=A HEAD^ HEAD -- '*.png')
               echo "PNG_FILES=$png_files" >> $GITHUB_ENV
+              echo "Found PNG files: $png_files"
 
           # 3. Generate Jekyll Posts
           - name: Add _posts
@@ -154,22 +155,23 @@ jobs:
               # Generate Jekyll posts for each subject
               for subject in "${!subjects[@]}"; do
                   # Define the post filename with current date and subject number
-                  post_filename="$POSTS_DIR/$(date +%Y-%m-%d)-subject-$subject.md"
+                  # To prevent duplicates, include a unique identifier (e.g., timestamp or hash)
+                  timestamp=$(date +%H%M%S)
+                  post_filename="$POSTS_DIR/$(date +%Y-%m-%d)-subject-$subject-$timestamp.md"
 
                   # Create the Jekyll post
                   {
-                    echo "---"
-                    echo "layout: post"
-                    echo "title: Subject $subject"
-                    echo "date: $(date +%Y-%m-%d)"
-                    echo "categories: subjects"
-                    echo "---"
-                    echo ""
-                    echo "# $subject"
-                    # Add images to the post
-                    for image in ${subjects["$subject"]}; do
-                        echo "![]($image)"
-                    done
+                      echo "---"
+                      echo "layout: post"
+                      echo "title: Subject $subject"
+                      echo "date: $(date +%Y-%m-%d)"
+                      echo "categories: subjects"
+                      echo "---"
+                      echo ""
+                      # Add images to the post
+                      for image in ${subjects["$subject"]}; do
+                          echo "![](/$image)"  # Ensure the image path is correct
+                      done
                   } > "$post_filename"
 
                   echo "Created post: $post_filename"
@@ -179,8 +181,26 @@ jobs:
             run: |
               echo "Listing _posts directory:"
               ls -la _posts
-          # 4. (Optional) Commit and Push Generated Posts
-          # This step commits the newly created posts back to the repository.
+          - name: Commit and Push Posts
+            if: github.event_name == 'push' && steps.find_png.outputs.PNG_FILES != ''
+            run: |
+                git config user.name "github-actions[bot]"
+                git config user.email "github-actions[bot]@users.noreply.github.com"
+            
+                # Add new posts to git
+                git add _posts/*.md
+            
+                # Commit changes if there are any
+                if ! git diff --cached --exit-code > /dev/null; then
+                  git commit -m "Add new posts for subjects $(date +%Y-%m-%d)"
+                  git push origin main  # Replace 'main' with your default branch if different
+                else
+                  echo "No changes to commit."
+                fi
+                
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            
 
           # 5. Set Up Ruby Environment
           - name: Setup Ruby
