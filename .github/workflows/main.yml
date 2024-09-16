@@ -156,6 +156,7 @@ jobs:
         with:
           name: generated-pngs
           path: ~/data/*/*/*.png
+          include-hidden-files: true
           retention-days: 1
 
   add:
