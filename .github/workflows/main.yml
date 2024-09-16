@@ -189,7 +189,7 @@ jobs:
               fi
 
             env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              GITHUB_TOKEN: ${{ secrets.GIT_PAT }}
 
           # 5. Set Up Ruby Environment
           - name: Setup Ruby
@@ -224,7 +224,7 @@ jobs:
           - name: Deploy to GitHub Pages
             uses: actions/deploy-pages@v1
             with:
-              token: ${{ secrets.GITHUB_TOKEN }}
+              token: ${{ secrets.GIT_PAT }}
 
   push:
     runs-on: self-hosted
