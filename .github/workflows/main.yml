@@ -79,6 +79,8 @@ jobs:
     name: Run Quality Control
     runs-on: self-hosted
     needs: process_raw
+    outputs:
+      art: ${{ steps.generated-pngs.outputs.artifact }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -164,9 +166,12 @@ jobs:
     name: Generate Jekyll Posts and Deploy
     runs-on: ubuntu-latest
     needs: run_qc
+    env:
+      artifact: ${{ needs.run_qc.outputs.art }}
 
     steps:
       # 1. Checkout the Repository
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
@@ -175,10 +180,11 @@ jobs:
 
       # 2. Download PNG Artifacts from QC Job
       - name: Download PNG Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: generated-pngs
-          path: ./downloaded-pngs  # Directory where PNGs will be downloaded
+          path: ./downloaded-pngs
+            # Directory where PNGs will be downloaded
 
       # 3. List Downloaded PNGs for Verification (Optional)
       - name: List Downloaded PNGs
