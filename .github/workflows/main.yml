@@ -122,6 +122,13 @@ jobs:
             done
           done
 
+
+      - name: List Directory After QC
+        run: |
+          echo "Listing directory after running QC:"
+          find ./data -type d
+          find ./data -type f
+
       - name: List Generated PNGs
         run: |
           echo "Listing generated PNGs:"
