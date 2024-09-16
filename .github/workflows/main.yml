@@ -221,7 +221,7 @@ jobs:
                   for image in ${subjects["$subject"]}; do
                       # Adjust the image path based on your site structure
                       # Assuming images are served from the root
-                      echo "![]({{ '$image' | relative_url }})"
+                      echo "![]({{ '/$image' | relative_url }})"
                   done
               } > "$post_filename"
       
@@ -268,6 +268,11 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           path: ./_site  # Ensure this matches your Jekyll build output
+
+      - name: List _site Directory
+        run: |
+          echo "Listing _site directory:"
+          ls -la _site
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v1
