@@ -158,6 +158,7 @@ jobs:
                     echo "categories: subjects"
                     echo "---"
                     echo ""
+                    echo "# $subject"
                     # Add images to the post
                     for image in ${subjects["$subject"]}; do
                         echo "![]($image)"
@@ -227,7 +228,7 @@ jobs:
 
   push:
     runs-on: self-hosted
-    needs: run_qc
+    needs: add
     steps:
       - name: Commit and Push Changes
         run: |
