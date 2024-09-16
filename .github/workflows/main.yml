@@ -79,8 +79,6 @@ jobs:
     name: Run Quality Control
     runs-on: self-hosted
     needs: process_raw
-    outputs:
-      # Optionally, you can set outputs here if needed
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
