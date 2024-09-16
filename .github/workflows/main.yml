@@ -207,6 +207,7 @@ jobs:
       # 6. Generate Jekyll Posts from PNGs
       - name: Generate Jekyll Posts
         run: |
+          $run_part=${{ needs.process_raw.outputs.run_part }}
           POSTS_DIR="_posts"
           mkdir -p "$POSTS_DIR"  # Ensure the _posts directory exists
 
@@ -248,7 +249,7 @@ jobs:
                       # Adjust the image path based on your site structure
                       # Assuming images are served from the root, adjust if necessary
                       image_relative_path=$(realpath --relative-to=./ _site $image)
-                      echo "![](./data/$(basename $(dirname $(dirname $image)))/$(basename "$image"))"
+                      echo "![](./data/$run_part/$(basename $(dirname $(dirname $image)))/$(basename "$image"))"
                   done
               } > "$post_filename"
 
