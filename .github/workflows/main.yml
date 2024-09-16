@@ -139,7 +139,7 @@ jobs:
         with:
           name: generated-pngs
           path: |
-            path: ./data/*/*/*.png  # Adjust the path based on your directory structure
+            ./data/*/*/*.png  # Adjust the path based on your directory structure
           retention-days: 2  # Optional: Adjust retention period as needed
 
   add:
