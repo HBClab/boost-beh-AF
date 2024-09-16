@@ -90,6 +90,7 @@ jobs:
                 for vers in ${vers}; do
                 echo "Processing version: $vers"
                 csv_file="./data/${sub}/processed/${run_part}/${sub}_${task}_${vers}.csv"
+                mkdir -p "./data/${sub}/${run_part}"
                 log_file="./data/${sub}/${run_part}/qc_${task}_${vers}.log"
                 echo "CSV file: $csv_file"s
                 echo "Log file: $log_file"
