@@ -129,21 +129,6 @@ jobs:
           find ./data -type d
           find ./data -type f
 
-      - name: List Generated PNGs
-        id: list_pngs
-        run: |
-            png_files=$(find ./data/*/*/*.png)
-            echo "PNG_FILES=${png_files}" >> $GITHUB_ENV
-            echo "Generated PNG files:"
-            echo "$png_files"
-            
-        
-      - name: Upload Generated PNGs as Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: generated-pngs
-          path: ./data/*/*/*.png
-          retention-days: 2
 
   add:
     name: Generate Jekyll Posts and Deploy
@@ -158,18 +143,6 @@ jobs:
           persist-credentials: false  # Recommended for security
           fetch-depth: 0  # Ensure full history is fetched for git commands
 
-      # 2. Download PNG Artifacts from QC Job
-      - name: Download PNG Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: generated-pngs
-          path: ./downloaded-pngs  # Directory where PNGs will be downloaded
-
-      # 3. List Downloaded PNGs for Verification (Optional)
-      - name: List Downloaded PNGs
-        run: |
-          echo "Listing downloaded PNGs:"
-          find ./downloaded-pngs -type f -name "*.png"
 
       # 4. Set Up Ruby Environment
       - name: Setup Ruby
@@ -193,7 +166,7 @@ jobs:
           declare -A subjects
 
           # Iterate over each PNG file and group them by subject number
-          for file in ./downloaded-pngs/*/processed/*/*.png; do
+          for file in ./data/*/*/*.png; do
               # Check if the file exists to avoid errors
               if [ ! -f "$file" ]; then
                   continue
