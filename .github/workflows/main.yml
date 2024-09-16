@@ -134,13 +134,15 @@ jobs:
         run: |
             png_files=$(find ./data/*/*/*.png)
             echo "PNG_FILES=${png_files}" >> $GITHUB_ENV
-            echo "png_files=$png_files" >> $GITHUB_OUTPUT
+            echo "Generated PNG files:"
+            echo "$png_files"
+            
         
       - name: Upload Generated PNGs as Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: generated-pngs
-          path: ${{ steps.list_pngs.outputs.png_files }}
+          path: ./data/*/*/*.png
           retention-days: 2
 
   add:
