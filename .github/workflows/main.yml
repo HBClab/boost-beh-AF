@@ -132,12 +132,15 @@ jobs:
       - name: List Generated PNGs
         id: list_pngs
         run: |
-          # Capture the list of PNG files and echo them as output
-          png_files=$(find ./data/*/*/*.png)
+          # Find PNG files and replace newlines with spaces
+          png_files=$(find ./data/*/*/*.png | tr '\n' ' ')
           echo "Found PNG files:"
           echo "$png_files"
-          echo "png_files=$png_files" >> $GITHUB_ENV
-          echo "PNG_FILES=$png_files" >> $GITHUB_OUTPUT
+          
+          # Save the list to an environment variable
+          echo "PNG_FILES=$png_files" >> $GITHUB_ENV
+          # Set the output variable for use in the next steps
+          echo "png_files=$png_files" >> $GITHUB_OUTPUT
         
       - name: Upload Generated PNGs as Artifacts
         uses: actions/upload-artifact@v3
