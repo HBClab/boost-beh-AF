@@ -4,6 +4,12 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  id-token: write
+
 jobs:
   process_raw:
     runs-on: self-hosted
@@ -204,7 +210,7 @@ jobs:
           - name: Deploy to GitHub Pages
             uses: actions/deploy-pages@v1
             with:
-              token: ${{ secrets.GIT_TOKEN }}
+              token: ${{ secrets.GITHUB_TOKEN }}
 
   push:
     runs-on: self-hosted
