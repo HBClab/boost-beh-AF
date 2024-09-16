@@ -170,26 +170,6 @@ jobs:
 
           # 4. (Optional) Commit and Push Generated Posts
           # This step commits the newly created posts back to the repository.
-          # If you prefer to keep the repository clean and not include generated posts, you can omit this step.
-          - name: Commit and Push Posts
-            if: github.event_name == 'push' && steps.find_png.outputs.PNG_FILES != ''
-            run: |
-              git config user.name "github-actions[bot]"
-              git config user.email "github-actions[bot]@users.noreply.github.com"
-
-              # Add new posts to git
-              git add _posts/*.md
-
-              # Commit changes if there are any
-              if ! git diff --cached --exit-code > /dev/null; then
-                git commit -m "Add new posts for subjects $(date +%Y-%m-%d)"
-                git push origin main  # Replace 'main' with your default branch if different
-              else
-                echo "No changes to commit."
-              fi
-
-            env:
-              GITHUB_TOKEN: ${{ secrets.GIT_PAT }}
 
           # 5. Set Up Ruby Environment
           - name: Setup Ruby
@@ -234,7 +214,7 @@ jobs:
         run: |
           git config --global user.name "miloswrath"
           git config --global user.email "miloswrath@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git remote set-url origin https://x-access-token:${{ secrets.GIT_PAT }}@github.com/$GITHUB_REPOSITORY
           git add .
           git commit -m "Automated commit by GitHub Actions"
           git push
