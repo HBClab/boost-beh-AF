@@ -104,80 +104,126 @@ jobs:
             done
             done
   add:
+      concurrency:
+        group: "pages"
+        cancel-in-progress: false
+      runs-on: ubuntu-latest
+      needs: run_qc  # Ensure 'run_qc' job exists if referenced
 
-    concurrency:
-      group: "pages"
-      cancel-in-progress: false
-    runs-on: ubuntu-latest
-    needs: run_qc
-    steps:
+      steps:
+          # 1. Checkout the Repository
+          - name: Checkout Repository
+            uses: actions/checkout@v4
+            with:
+              persist-credentials: false  # Recommended for security
+              fetch-depth: 0  # Ensure full history is fetched for git commands
 
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: find new png files
-        run: |
-            png_files=$(git diff --name-only --relative --diff-filter=A -- '*.png')
-            echo png_files << GITHUB_ENV
+          # 2. Find New PNG Files
+          - name: Find New PNG Files
+            id: find_png
+            run: |
+              # Find newly added PNG files in this commit
+              png_files=$(git diff --name-only --relative --diff-filter=A HEAD^ HEAD -- '*.png')
+              echo "PNG_FILES=$png_files" >> $GITHUB_ENV
 
+          # 3. Generate Jekyll Posts
+          - name: Add _posts
+            run: |
+              POSTS_DIR="_posts"
+              mkdir -p $POSTS_DIR  # Ensure the _posts directory exists
 
-      - name: Add _posts
-        run: |
-          POSTS_DIR="_posts"
-          # Loop through the images and group by subject number
-          declare -A subjects
+              # Initialize an associative array to group images by subject
+              declare -A subjects
 
-          for file in $png_files; do
-              # Extract the subject number (assuming it's the first part of the filename before '_')
-              subject=$(echo "$file" | awk -F_ '{print $1}')
-              
-              # Append the filename to the subject's array
-              subjects["$subject"]+="$file "
-          done
-
-          # Generate Jekyll posts
-          for subject in "${!subjects[@]}"; do
-              # Define the post filename (e.g., using current date and subject number)
-              post_filename="$POSTS_DIR/$(date +%Y-%m-%d)-subject-$subject.md"
-
-              # Create the Jekyll post
-              echo "---" > "$post_filename"
-              echo "layout: post" >> "$post_filename"
-              echo "title: Subject $subject" >> "$post_filename"
-              echo "date: $(date +%Y-%m-%d)" >> "$post_filename"
-              echo "categories: subjects" >> "$post_filename"
-              echo "---" >> "$post_filename"
-              
-              # Add images to the post
-              for image in ${subjects["$subject"]}; do
-                  echo "![]($image)" >> "$post_filename"
+              # Iterate over each PNG file and group them by subject number
+              for file in $PNG_FILES; do
+                  # Extract the subject number (assuming it's the first part of the filename before '_')
+                  subject=$(echo "$file" | awk -F_ '{print $1}')
+                  
+                  # Append the filename to the subject's array
+                  subjects["$subject"]+="$file "
               done
-          done
 
-    
-      
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@8575951200e472d5f2d95c625da0c7bec8217c42 # v1.161.0
-        with:
-          ruby-version: '3.1' # Not needed with a .ruby-version file
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-          cache-version: 0 # Increment this number if you need to re-download cached gems
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v5
-      - name: Build with Jekyll
-        # Outputs to the './_site' directory by default
-        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-        env:
-          JEKYLL_ENV: production
-      - name: Upload artifact
-        # Automatically uploads an artifact from the './_site' directory by default
-        uses: actions/upload-pages-artifact@v3
+              # Generate Jekyll posts for each subject
+              for subject in "${!subjects[@]}"; do
+                  # Define the post filename with current date and subject number
+                  post_filename="$POSTS_DIR/$(date +%Y-%m-%d)-subject-$subject.md"
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
+                  # Create the Jekyll post
+                  {
+                    echo "---"
+                    echo "layout: post"
+                    echo "title: Subject $subject"
+                    echo "date: $(date +%Y-%m-%d)"
+                    echo "categories: subjects"
+                    echo "---"
+                    echo ""
+                    # Add images to the post
+                    for image in ${subjects["$subject"]}; do
+                        echo "![]($image)"
+                    done
+                  } > "$post_filename"
+
+                  echo "Created post: $post_filename"
+              done
+
+          # 4. (Optional) Commit and Push Generated Posts
+          # This step commits the newly created posts back to the repository.
+          # If you prefer to keep the repository clean and not include generated posts, you can omit this step.
+          - name: Commit and Push Posts
+            if: github.event_name == 'push' && steps.find_png.outputs.PNG_FILES != ''
+            run: |
+              git config user.name "github-actions[bot]"
+              git config user.email "github-actions[bot]@users.noreply.github.com"
+
+              # Add new posts to git
+              git add _posts/*.md
+
+              # Commit changes if there are any
+              if ! git diff --cached --exit-code > /dev/null; then
+                git commit -m "Add new posts for subjects $(date +%Y-%m-%d)"
+                git push origin main  # Replace 'main' with your default branch if different
+              else
+                echo "No changes to commit."
+              fi
+
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # 5. Set Up Ruby Environment
+          - name: Setup Ruby
+            uses: ruby/setup-ruby@v1
+            with:
+              ruby-version: '3.1'  # Specify your Ruby version
+              bundler-cache: true  # Caches installed gems automatically
+              cache-version: 1  # Increment if you need to reset the cache
+
+          # 6. Install Dependencies
+          - name: Install Dependencies
+            run: bundle install
+
+          # 7. Build the Jekyll Site
+          - name: Build with Jekyll
+            run: bundle exec jekyll build --baseurl "${{ github.event.inputs.base_path || '' }}"
+            env:
+              JEKYLL_ENV: production
+
+
+          # Alternatively, if you prefer using GitHub's built-in Pages action:
+          # Uncomment the following steps and remove the above Deploy step
+          #
+          - name: Configure GitHub Pages
+            uses: actions/configure-pages@v5
+          #
+          - name: Upload Pages Artifact
+            uses: actions/upload-pages-artifact@v1
+            with:
+              path: ./_site
+            
+          - name: Deploy to GitHub Pages
+            uses: actions/deploy-pages@v1
+            with:
+              token: ${{ secrets.GITHUB_TOKEN }}
 
   push:
     runs-on: self-hosted
