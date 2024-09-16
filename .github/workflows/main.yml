@@ -6,7 +6,7 @@ on:
 
 jobs:
   process_raw:
-    runs-on: self-hosted
+    runs-on: slef-hosted
     outputs:
         sub: ${{ steps.set_vars.outputs.sub }}
         task: ${{ steps.set_vars.outputs.task }}
@@ -107,7 +107,7 @@ jobs:
     concurrency:
       group: "pages"
       cancel-in-progress: false
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs: run_qc
     steps:
       - name: find new png files
