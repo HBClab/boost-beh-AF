@@ -152,11 +152,11 @@ jobs:
           done
         
       - name: Upload Generated PNGs as Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: generated-pngs
-          path: ${{ steps.list_pngs.outputs.PNG_FILES }}
-          retention-days: 7
+          path: ~/data/*/*/*.png
+          retention-days: 1
 
   add:
     name: Generate Jekyll Posts and Deploy
