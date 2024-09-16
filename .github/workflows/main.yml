@@ -125,6 +125,15 @@ jobs:
           done
 
 
+      - name: Commit and Push QC Results
+        run: |
+          git config --global user.name "miloswrath"
+          git config --global user.email "
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git add ./data/*/*/*.png
+          git commit -m "Add QC results for subjects $(date +%Y-%m-%d)"
+
+
       - name: List Directory After QC
         run: |
           echo "Listing directory after running QC:"
