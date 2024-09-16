@@ -155,7 +155,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: generated-pngs
-          path: ~/data/*/*/*.png
+          path: boost-beh-AF/data/*/*/*.png
           include-hidden-files: true
           retention-days: 1
 
