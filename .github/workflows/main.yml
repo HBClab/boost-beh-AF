@@ -248,7 +248,7 @@ jobs:
                       # Adjust the image path based on your site structure
                       # Assuming images are served from the root, adjust if necessary
                       image_relative_path=$(realpath --relative-to=./ _site $image)
-                      echo "![](/downloaded-pngs/${subject}/$(basename $(dirname $(dirname $image)))/$(basename "$image"))"
+                      echo "![](./data/$(basename $(dirname $(dirname $image)))/$(basename "$image"))"
                   done
               } > "$post_filename"
 
@@ -304,22 +304,3 @@ jobs:
         uses: actions/deploy-pages@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
-  push:
-    name: Commit and Push Changes
-    runs-on: self-hosted
-    needs: add
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Commit and Push Changes
-        run: |
-          git config --global user.name "miloswrath"
-          git config --global user.email "miloswrath@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/$GITHUB_REPOSITORY
-          git add .
-          git commit -m "Automated commit by GitHub Actions" || echo "No changes to commit."
-          git push
-        env:
-          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
