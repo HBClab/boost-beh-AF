@@ -221,7 +221,7 @@ jobs:
                   for image in ${subjects["$subject"]}; do
                       # Adjust the image path based on your site structure
                       # Assuming images are served from the root
-                      echo "![]({{ '/$image' | relative_url }})"
+                      echo "![]($image)"
                   done
               } > "$post_filename"
       
