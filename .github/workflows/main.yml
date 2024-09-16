@@ -174,7 +174,7 @@ jobs:
   add:
     name: Generate Jekyll Posts and Deploy
     runs-on: ubuntu-latest
-    needs: run_qc
+    needs: [process_raw, run_qc]
     env:
       artifact: ${{ needs.run_qc.outputs.art }}
 
@@ -258,7 +258,7 @@ jobs:
                       # Adjust the image path based on your site structure
                       # Assuming images are served from the root, adjust if necessary
                       image_relative_path=$(realpath --relative-to=./ _site $image)
-                      echo "![](./data/$run_part/$(basename $(dirname $(dirname $image)))/$(basename "$image"))"
+                      echo "![](./data/${run_part}/$(basename $(dirname $(dirname $image)))/$(basename "$image"))"
                   done
               } > "$post_filename"
 
