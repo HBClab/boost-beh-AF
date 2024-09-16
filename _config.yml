@@ -8,5 +8,7 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-github-metadata
+include:
+  - data
 
 theme: minima
