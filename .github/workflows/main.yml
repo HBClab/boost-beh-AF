@@ -133,14 +133,23 @@ jobs:
         id: list_pngs
         run: |
           # Find PNG files and replace newlines with spaces
-          png_files=$(find ./data/*/*/*.png | tr '\n' ' ')
+          png_files=$(find ./data/*/*/*.png | tr '\n' ' ' | tr -d '\r' | sed 's/ *$//')
           echo "Found PNG files:"
           echo "$png_files"
-          
-          # Save the list to an environment variable
+          # Save the list to an environment variable and output
           echo "PNG_FILES=$png_files" >> $GITHUB_ENV
-          # Set the output variable for use in the next steps
           echo "png_files=$png_files" >> $GITHUB_OUTPUT
+
+      - name: Verify Files Exist Before Upload
+        run: |
+          for file in ${{ steps.list_pngs.outputs.png_files }}; do
+            if [ -f "$file" ]; then
+              echo "$file exists."
+            else
+              echo "$file does not exist!"
+              exit 1
+            fi
+          done
         
       - name: Upload Generated PNGs as Artifacts
         uses: actions/upload-artifact@v3
