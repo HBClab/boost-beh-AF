@@ -11,6 +11,7 @@ jobs:
         sub: ${{ steps.set_vars.outputs.sub }}
         task: ${{ steps.set_vars.outputs.task }}
         version: ${{ steps.set_vars.outputs.version }}
+        run_part: ${{ steps.set_vars.outputs.run_part }}
 
     steps:
       - name: checkout code and return recently uploaded file in /data
@@ -36,18 +37,31 @@ jobs:
       - name: parse raw
         id: set_vars
         run: |
-            # Loop through each CSV file in $data
-            for file in $data; do
-                filename=$(basename "$file")
-                IFS='_' read -r sub task version <<< "$filename"
-                version="${version%.csv}"  # Remove the .csv extension from version
-                echo "::set-output name=sub::$sub"
-                echo "::set-output name=task::$task"
-                echo "::set-output name=version::$version"
-                echo "Subject: $sub"
-                echo "Task: $task"
-                echo "Version: $version"
-            done
+          # Loop through each CSV file in $data
+          for file in $data; do
+              # Extract the directory and filename
+              dir=$(dirname "$file")
+              filename=$(basename "$file")
+
+              # Extract the run-* part from the directory
+              run_part=$(basename "$dir")
+
+              # Split the filename into sub, task, and version
+              IFS='_' read -r sub task version <<< "$filename"
+              version="${version%.csv}"  # Remove the .csv extension from version
+
+              # Set outputs
+              echo "::set-output name=run_part::$run_part"
+              echo "::set-output name=sub::$sub"
+              echo "::set-output name=task::$task"
+              echo "::set-output name=version::$version"
+
+              # Print the extracted values
+              echo "Run Part: $run_part"
+              echo "Subject: $sub"
+              echo "Task: $task"
+              echo "Version: $version"
+          done
 
   run_qc:
     runs-on: self-hosted
@@ -61,19 +75,21 @@ jobs:
             echo "sub=${{ needs.process_raw.outputs.sub }}"
             echo "task=${{ needs.process_raw.outputs.task }}"
             echo "version=${{ needs.process_raw.outputs.version }}"
+            echo "run_part=${{ needs.process_raw.outputs.run_part }}"
 
       - name: run quality control
         run: |
             sub=${{ needs.process_raw.outputs.sub }}
             task=${{ needs.process_raw.outputs.task }}
             vers=${{ needs.process_raw.outputs.version }}
+            run_part=${{ needs.process_raw.outputs.run_part }}
             for sub in ${sub}; do
             echo "Processing subject: $sub"
             for task in ${task}; do
                 echo "Processing task: $task"
                 for vers in ${vers}; do
                 echo "Processing version: $vers"
-                csv_file="./data/${sub}/processed/${sub}_${task}_${vers}.csv"
+                csv_file="./data/${sub}/processed/${run_part}/${sub}_${task}_${vers}.csv"
                 log_file="./data/${sub}/qc_${task}_${vers}.log"
                 echo "CSV file: $csv_file"
                 echo "Log file: $log_file"
@@ -113,7 +129,7 @@ jobs:
               # Append the filename to the subject's array
               subjects["$subject"]+="$file "
           done
-          
+
           # Generate Jekyll posts
           for subject in "${!subjects[@]}"; do
               # Define the post filename (e.g., using current date and subject number)
