@@ -140,16 +140,6 @@ jobs:
           find ./data -type d
           find ./data -type f
 
-      - name: List Generated PNGs
-        id: list_pngs
-        run: |
-          # Find PNG files and replace newlines with spaces
-          png_files=$(find ./data/*/*/*.png | tr '\n' ' ' | tr -d '\r' | sed 's/ *$//')
-          echo "Found PNG files:"
-          echo "$png_files"
-          # Save the list to an environment variable and output
-          echo "PNG_FILES=$png_files" >> $GITHUB_ENV
-          echo "png_files=$png_files" >> $GITHUB_OUTPUT
 
 
   add:
@@ -192,7 +182,8 @@ jobs:
           declare -A subjects
           
           images=$(git diff-tree --no-commit-id --name-only -r HEAD | grep '\.png$')
-
+          echo "Images: $images"
+          
           # Iterate over each PNG file and group them by subject number
           for file in $images; do
               # Check if the file exists to avoid errors
