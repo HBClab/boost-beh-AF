@@ -6,7 +6,7 @@ on:
 
 jobs:
   process_raw:
-    runs-on: slef-hosted
+    runs-on: self-hosted
     outputs:
         sub: ${{ steps.set_vars.outputs.sub }}
         task: ${{ steps.set_vars.outputs.task }}
