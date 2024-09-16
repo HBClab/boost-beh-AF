@@ -110,14 +110,6 @@ def main():
     qc(submission)
     
     print(f'QC passed for {submission}, generating plots...')
-    # generate plots
-    if os.path.exists(output+'run-1'):
-        output = output+'run-2'
-    elif os.path.exists(output+'run-2'):
-        output = output+'run-3'
-    else:
-        output = output+'run-1'
-    os.makedirs(output, exist_ok=True)
     plots(submission, output, sub)
     return print('QC and Plots complete')
     

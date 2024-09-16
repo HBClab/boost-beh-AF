@@ -95,7 +95,7 @@ jobs:
                 echo "CSV file: $csv_file"s
                 echo "Log file: $log_file"
                 if [ -f "$csv_file" ]; then
-                    python ./code/AFqC.py -s "$csv_file" -o "./data/${sub}/" -sub "$sub" | tee "$log_file"
+                    python ./code/AFqC.py -s "$csv_file" -o "./data/${sub}/${run_part}" -sub "$sub" | tee "$log_file"
                     echo "QC for ${sub}_${task}_${vers} running"
                 else
                     echo "CSV file $csv_file does not exist"
@@ -172,6 +172,12 @@ jobs:
       - name: Upload artifact
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
 
   push:
     runs-on: self-hosted
