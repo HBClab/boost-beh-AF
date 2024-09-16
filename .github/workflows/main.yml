@@ -175,6 +175,10 @@ jobs:
                   echo "Created post: $post_filename"
               done
 
+          - name: List _posts Directory
+            run: |
+              echo "Listing _posts directory:"
+              ls -la _posts
           # 4. (Optional) Commit and Push Generated Posts
           # This step commits the newly created posts back to the repository.
 
@@ -192,7 +196,7 @@ jobs:
 
           # 7. Build the Jekyll Site
           - name: Build with Jekyll
-            run: bundle exec jekyll build --baseurl "${{ github.event.inputs.base_path || '' }}"
+            run: bundle exec jekyll build --verbose --baseurl "${{ github.event.inputs.base_path || '' }}"
             env:
               JEKYLL_ENV: production
 
