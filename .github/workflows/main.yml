@@ -132,14 +132,14 @@ jobs:
       - name: List Generated PNGs
         run: |
           echo "Listing generated PNGs:"
-          find ./data/**/*.png || echo "No PNGs found."
+          find ./data/*/*/*.png || echo "No PNGs found."
 
       - name: Upload Generated PNGs as Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: generated-pngs
           path: |
-            path: ./data/**/*.png  # Adjust the path based on your directory structure
+            path: ./data/*/*/*.png  # Adjust the path based on your directory structure
           retention-days: 2  # Optional: Adjust retention period as needed
 
   add:
