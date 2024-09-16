@@ -155,9 +155,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: generated-pngs
-          path: boost-beh-AF/data/*/*/*.png
+          path: |
+            {{ github.workspace }}/data/*/*/*.png
           include-hidden-files: true
           retention-days: 1
+          if-no-files-found: error
 
   add:
     name: Generate Jekyll Posts and Deploy
