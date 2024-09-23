@@ -216,7 +216,7 @@ def move_txt(txt_files):
         for d in dirs:
             shutil.rmtree(os.path.join(root, d))
     # Optionally, remove the raw directory itself
-    # os.rmdir('./data/raw')
+    os.rmdir('./data/raw')
 
     return None
 
