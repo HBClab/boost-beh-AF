@@ -145,7 +145,7 @@ jobs:
         with:
           name: qc-results-${{ matrix.config.sub }}-${{ matrix.config.task }}-${{ matrix.config.version }}
           path: |
-            ./data/${{ matrix.config.sub }}/processed/${{ matrix.config.run_part }}/*.png
+            ./data/${{ matrix.config.sub }}/${{ matrix.config.run_part }}/*.png
             ./data/${{ matrix.config.sub }}/${{ matrix.config.run_part }}/*.log
 
 
@@ -172,13 +172,11 @@ jobs:
             IFS='-' read -r _ _ sub task version run_part <<< "$dir"
             echo "Subject: $sub, Task: $task, Version: $version, Run Part: $run_part"
             # Define the target directories
-            processed_dir="./data/${sub}/processed/${run_part}"
             run_part_dir="./data/${sub}/${run_part}"
             # Create the target directories if they don't exist
-            mkdir -p "$processed_dir"
             mkdir -p "$run_part_dir"
             # Move .png files to the processed directory
-            mv "$dir"/*.png "$processed_dir/" 2>/dev/null || :
+            mv "$dir"/*.png "$run_part_dir/" 2>/dev/null || :
             # Move .log files to the run_part directory
             mv "$dir"/*.log "$run_part_dir/" 2>/dev/null || :
           done
