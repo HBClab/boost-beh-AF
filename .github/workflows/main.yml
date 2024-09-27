@@ -140,20 +140,52 @@ jobs:
             echo "CSV file $csv_file does not exist"
           fi
 
-      - name: Commit and Push QC Results
-        run: |
-          git config --global user.name "miloswrath"
-          git config --global user.email "miloswrath@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
-          git add ./data/*/*/*.png
-          git commit -m "Add QC results for subjects $(date +%Y-%m-%d)"
-          git push origin main  
+      - name: Upload QC Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: qc-results-${{ matrix.config.sub }}-${{ matrix.config.task }}-${{ matrix.config.version }}
+          path: |
+            ./data/${{ matrix.config.sub }}/processed/${{ matrix.config.run_part }}/*.png
+            ./data/${{ matrix.config.sub }}/${{ matrix.config.run_part }}/*.log
 
-      - name: List Directory After QC
-        run: |
-          echo "Listing directory after running QC:"
-          find ./data -type d
-          find ./data -type f
+
+            commit_results:
+              name: Commit and Push QC Results
+              runs-on: self-hosted
+              needs: run_qc
+          
+              steps:
+                - name: Checkout Code
+                  uses: actions/checkout@v3
+          
+                - name: Download all artifacts
+                  uses: actions/download-artifact@v3
+                  with:
+                    path: ./
+          
+                - name: Move QC Results
+                  run: |
+                    echo "Moving QC results to data directory..."
+                    for dir in qc-results-*; do
+                      echo "Processing artifact directory: $dir"
+                      mkdir -p "./data"
+                      mv "$dir"/* ./data/
+                    done
+          
+                - name: Commit and Push QC Results
+                  run: |
+                    git config --global user.name "miloswrath"
+                    git config --global user.email "miloswrath@users.noreply.github.com"
+                    git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+                    git add ./data/*/*/*.png
+                    git commit -m "Add QC results for subjects $(date +%Y-%m-%d)"
+                    git push origin main  
+          
+                - name: List Directory After QC
+                  run: |
+                    echo "Listing directory after running QC:"
+                    find ./data -type d
+                    find ./data -type f
 
   add:
     name: Generate Jekyll Posts and Deploy
