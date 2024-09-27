@@ -37,7 +37,8 @@ def get_met(tease):
         'studyIds': [945, 960, 990, 898, 919, 932]
     }
 
-    response = requests.post(url, headers=headers, json=data, proxies=proxies)
+    response = requests.post(url, headers=headers, json=data, proxies=proxies
+                             )
 
     # If you want to print the response
     print(response.status_code)
@@ -88,7 +89,8 @@ def get_data(study_result_ids, tease):
     }
 
     url = 'https://jatos.psychology.uiowa.edu/jatos/api/v1/results/data'
-    response = requests.post(url, headers=headers, json=datas, proxies=proxies)
+    response = requests.post(url, headers=headers, json=datas, proxies=proxies
+                             )
     # Debugging information
     print(f"Status Code: {response.status_code}")
 
