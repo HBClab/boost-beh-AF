@@ -20,6 +20,7 @@ jobs:
     runs-on: self-hosted
     outputs:
       data: ${{ steps.set_vars.outputs.json }}
+      has_data: ${{ steps.set_vars.outputs.has_data }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -94,11 +95,18 @@ jobs:
 
           # Output the JSON array
           echo "json=$json_array" >> $GITHUB_OUTPUT
+          # Determine if json_array is empty
+          if [ "$json_array" = "[]" ]; then
+              echo "has_data=false" >> $GITHUB_OUTPUT
+          else
+              echo "has_data=true" >> $GITHUB_OUTPUT
+          fi
 
   run_qc:
     name: Run Quality Control
     runs-on: self-hosted
     needs: process_raw
+    if: needs.process_raw.outputs.has_data == 'true'
     strategy:
       matrix:
         config: ${{ fromJson(needs.process_raw.outputs.data) }}
@@ -154,7 +162,8 @@ jobs:
   commit_results:
     name: Commit and Push QC Results
     runs-on: self-hosted
-    needs: run_qc
+    needs: [process_raw, run_qc]
+    if: needs.process_raw.outputs.has_data == 'true'
 
     steps:
       - name: Checkout Code
@@ -241,8 +250,12 @@ jobs:
           declare -A subjects
       
           # Get the list of PNG files added in the latest commit
-          images=$(git diff --name-only HEAD~1 HEAD | grep '\.png$')
-          echo "Images: $images"
+          images=$(git diff --name-only HEAD~1 HEAD | grep '\.png$' || true)
+          echo "Images: $images"          
+          if [ -z "$images" ]; then
+              echo "No new images found. Skipping post generation."
+              exit 0
+          fi
       
           # Iterate over each PNG file and group them by subject number
           for file in $images; do
